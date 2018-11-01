@@ -22,6 +22,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Consumer {
 
     /**
+     * zhj
      * To get ipv6 address to work, add
      * System.setProperty("java.net.preferIPv6Addresses", "true");
      * before running your application.
