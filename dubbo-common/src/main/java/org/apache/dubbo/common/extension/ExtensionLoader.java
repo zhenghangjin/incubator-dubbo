@@ -69,7 +69,7 @@ public class ExtensionLoader<T> {
 
     private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
 
-    private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
+    private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();// ZHJ 缓存 Extension Loaders
 
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
@@ -85,6 +85,9 @@ public class ExtensionLoader<T> {
 
     private final Map<String, Object> cachedActivates = new ConcurrentHashMap<String, Object>();
     private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
+    /**
+     * ZHJ 缓存当前类 为什么需要使用 hold 包装？？？
+     */
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
     private volatile Class<?> cachedAdaptiveClass = null;
     private String cachedDefaultName;
@@ -103,6 +106,12 @@ public class ExtensionLoader<T> {
         return type.isAnnotationPresent(SPI.class);
     }
 
+    /**
+     * 从 HashMap 取 ExtensionLoader，如果缓存为空，new 一个新的
+     * @param type
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
         if (type == null) {
@@ -449,6 +458,11 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 获取当前类
+     * 如果缓存有，取缓存
+     * 如果没有缓存，创建一个
+     */
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {
         Object instance = cachedAdaptiveInstance.get();
@@ -744,6 +758,10 @@ public class ExtensionLoader<T> {
         return extension.value();
     }
 
+    /**
+     * 创建当前类
+     * @return
+     */
     @SuppressWarnings("unchecked")
     private T createAdaptiveExtension() {
         try {
