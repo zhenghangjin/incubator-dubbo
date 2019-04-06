@@ -70,7 +70,10 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         RootBeanDefinition beanDefinition = new RootBeanDefinition();
         beanDefinition.setBeanClass(beanClass);
         beanDefinition.setLazyInit(false);
-        String id = element.getAttribute("id");
+        // ZHJ：生成BeanId===================================
+        // 解析id属性
+        // id为空则用name属性，name为空用interfaceName或dubbo(<dubbo:protocol/> 默认dubbo协议)，为空取ClassName。如有重复，后缀累加
+        String id = element.getAttribute("id");// ZHJ 解析id
         if ((id == null || id.length() == 0) && required) {
             String generatedBeanName = element.getAttribute("name");
             if (generatedBeanName == null || generatedBeanName.length() == 0) {
@@ -89,6 +92,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                 id = generatedBeanName + (counter++);
             }
         }
+        // ZHJ：将对象进行注册
         if (id != null && id.length() > 0) {
             if (parserContext.getRegistry().containsBeanDefinition(id)) {
                 throw new IllegalStateException("Duplicate spring bean id " + id);
@@ -96,18 +100,23 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             parserContext.getRegistry().registerBeanDefinition(id, beanDefinition);
             beanDefinition.getPropertyValues().addPropertyValue("id", id);
         }
+        // ZHJ：生成BeanId END 至此Bean注册工作完毕=================================
+
         if (ProtocolConfig.class.equals(beanClass)) {
+            // ZHJ：特殊处理 <dubbo:protocol>
+            // 解析到protocol标签
             for (String name : parserContext.getRegistry().getBeanDefinitionNames()) {
                 BeanDefinition definition = parserContext.getRegistry().getBeanDefinition(name);
                 PropertyValue property = definition.getPropertyValues().getPropertyValue("protocol");
                 if (property != null) {
                     Object value = property.getValue();
                     if (value instanceof ProtocolConfig && id.equals(((ProtocolConfig) value).getName())) {
-                        definition.getPropertyValues().addPropertyValue("protocol", new RuntimeBeanReference(id));
+                        definition.getPropertyValues().addPropertyValue("protocol", new RuntimeBeanReference(id));// 解析阶段依赖其他对象的实例，但是实例还没创建完毕
                     }
                 }
             }
         } else if (ServiceBean.class.equals(beanClass)) {
+            // ZHJ：特殊处理
             String className = element.getAttribute("class");
             if (className != null && className.length() > 0) {
                 RootBeanDefinition classDefinition = new RootBeanDefinition();
@@ -117,8 +126,10 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                 beanDefinition.getPropertyValues().addPropertyValue("ref", new BeanDefinitionHolder(classDefinition, id + "Impl"));
             }
         } else if (ProviderConfig.class.equals(beanClass)) {
+            // ZHJ：特殊处理
             parseNested(element, parserContext, ServiceBean.class, true, "service", "provider", id, beanDefinition);
         } else if (ConsumerConfig.class.equals(beanClass)) {
+            // ZHJ：特殊处理
             parseNested(element, parserContext, ReferenceBean.class, false, "reference", "consumer", id, beanDefinition);
         }
         Set<String> props = new HashSet<String>();
