@@ -15,3 +15,14 @@
     (3) InitializingBean, DisposableBean 类的初始化和销毁
     同一个Bean中：先构造函数 --> 然后是set方法注入 --> ApplicationContextAware#setApplicationContext()
         --> InitializingBean的afterPropertiesSet方法 --> init-method方法
+
+
+    ReferenceBean->Constructor              invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->setApplicationContext    invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->afterPropertiesSet       invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->isSingleton              invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->getObjectType            invoke...interface com.alibaba.dubbo.demo.DemoService2, dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->isSingleton              invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->getObjectType            invoke...interface com.alibaba.dubbo.demo.DemoService2, dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->isSingleton              invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
+    ReferenceBean->getObject                invoke..., dubbo version: 2.0.0, current host: 192.168.99.138

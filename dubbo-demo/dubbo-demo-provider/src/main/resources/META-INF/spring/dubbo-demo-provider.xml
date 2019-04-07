@@ -41,6 +41,12 @@ limitations under the License.
 
     <!-- service implementation, as same as regular local bean -->
     <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
+    <bean id="demoService2" class="com.alibaba.dubbo.demo.provider.DemoService2Impl"/>
+
+    <bean id="springBeanTest" class="com.alibaba.dubbo.demo.provider.SpringBeanTest">
+        <property name="demoService2" ref="demoService2"/>
+        <property name="demoService" ref="demoService"/>
+    </bean>
 
     <!-- declare the service interface to be exported -->
 
