@@ -1,8 +1,17 @@
+一、
 1、git 从tag分支拉取标签
 2、dubbo 解决分布式事务
 
-3、RootBeanDefinition 使用原理
-4、（1）DubboBeanDefinitionParser#parse 获取class属性的意义
-   （2）BeanDefinitionHolder 作用？
 
-5、RuntimeBeanReference 解析阶段依赖其他对象的实例，但是实例还没创建完毕
+二、Spring 专题
+1、RootBeanDefinition 使用原理 用于spring对象创建
+2、DubboBeanDefinitionParser#parse 获取class属性的意义
+3、为何两者都能使用：
+    （1）RuntimeBeanReference 解析阶段依赖其他对象的实例，但是实例还没创建完毕
+    （2）BeanDefinitionHolder 作用？
+4、对象实现：FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean
+    (1) FactoryBean：FactoryBean跟普通Bean不同，其返回的对象不是指定类的一个实例，而是该FactoryBean的getObject方法所返回的对象。创建出来的对象是否属于单例由isSingleton中的返回决定。
+    (2) ApplicationContextAware：
+    (3) InitializingBean, DisposableBean 类的初始化和销毁
+        先构造函数 --> 然后是set方法注入 --> ApplicationContextAware#setApplicationContext()
+        --> InitializingBean的afterPropertiesSet方法 --> init-method方法
