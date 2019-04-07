@@ -1,4 +1,8 @@
-1、 git 从tag分支拉取标签
+1、git 从tag分支拉取标签
 2、dubbo 解决分布式事务
 
 3、RootBeanDefinition 使用原理
+4、（1）DubboBeanDefinitionParser#parse 获取class属性的意义
+   （2）BeanDefinitionHolder 作用？
+
+5、RuntimeBeanReference 解析阶段依赖其他对象的实例，但是实例还没创建完毕

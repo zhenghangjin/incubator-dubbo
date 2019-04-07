@@ -29,12 +29,19 @@ limitations under the License.
     <dubbo:registry address="zookeeper://106.13.35.40:2181"/>
 
     <!-- use dubbo protocol to export service on port 20880 -->
+    <dubbo:provider>
+        <dubbo:parameter key="sincle" value="sincle"/>
+        <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService"/>
+        <dubbo:service interface="com.alibaba.dubbo.demo.DemoService2" class="com.alibaba.dubbo.demo.provider.DemoService2Impl">
+            <dubbo:parameter key="zhj" value="zhj"/>
+        </dubbo:service>
+    </dubbo:provider>
+
     <dubbo:protocol name="dubbo" port="20880"/>
 
     <!-- service implementation, as same as regular local bean -->
     <bean id="demoService" class="com.alibaba.dubbo.demo.provider.DemoServiceImpl"/>
 
     <!-- declare the service interface to be exported -->
-    <dubbo:service interface="com.alibaba.dubbo.demo.DemoService" ref="demoService"/>
 
 </beans>

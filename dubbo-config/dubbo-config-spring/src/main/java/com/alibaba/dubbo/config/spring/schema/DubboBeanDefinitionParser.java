@@ -102,9 +102,11 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
         // ZHJ：生成BeanId END 至此Bean注册工作完毕=================================
 
+
+        // ZHJ：处理特殊属性或者循环遍历子节点=============== begin ================
         if (ProtocolConfig.class.equals(beanClass)) {
             // ZHJ：特殊处理 <dubbo:protocol>
-            // 解析到protocol标签
+            // 如果解析到protocol标签，循环已经解析的对象，如果对象有protocol属性，并且name相同，用该对象取代protocol属性
             for (String name : parserContext.getRegistry().getBeanDefinitionNames()) {
                 BeanDefinition definition = parserContext.getRegistry().getBeanDefinition(name);
                 PropertyValue property = definition.getPropertyValues().getPropertyValue("protocol");
@@ -116,29 +118,36 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                 }
             }
         } else if (ServiceBean.class.equals(beanClass)) {
-            // ZHJ：特殊处理
+            // ZHJ：特殊处理<dubbo:service>
+            // ZHJ TODO 获取class属性的意义？ class 代替 ref 的内容
             String className = element.getAttribute("class");
             if (className != null && className.length() > 0) {
                 RootBeanDefinition classDefinition = new RootBeanDefinition();
                 classDefinition.setBeanClass(ReflectUtils.forName(className));
                 classDefinition.setLazyInit(false);
-                parseProperties(element.getChildNodes(), classDefinition);
+                parseProperties(element.getChildNodes(), classDefinition);// 如果有class属性，可以解析子节点 property 属性
                 beanDefinition.getPropertyValues().addPropertyValue("ref", new BeanDefinitionHolder(classDefinition, id + "Impl"));
             }
         } else if (ProviderConfig.class.equals(beanClass)) {
-            // ZHJ：特殊处理
+            // ZHJ：特殊处理<dubbo:provider> 递归处理子节点
             parseNested(element, parserContext, ServiceBean.class, true, "service", "provider", id, beanDefinition);
         } else if (ConsumerConfig.class.equals(beanClass)) {
-            // ZHJ：特殊处理
+            // ZHJ：特殊处理<dubbo:consumer> 递归处理子节点
             parseNested(element, parserContext, ReferenceBean.class, false, "reference", "consumer", id, beanDefinition);
         }
+        // ZHJ：处理特殊属性或者循环遍历子节点 end ================ end ===================
+
+
+
+        // ZHJ：处理 Setter 方法===================== begin ====================
+        // 过滤所有Setter方法，得到property，放入 Set<String> props 中
         Set<String> props = new HashSet<String>();
         ManagedMap parameters = null;
         for (Method setter : beanClass.getMethods()) {
             String name = setter.getName();
             if (name.length() > 3 && name.startsWith("set")
                     && Modifier.isPublic(setter.getModifiers())
-                    && setter.getParameterTypes().length == 1) {
+                    && setter.getParameterTypes().length == 1) {// ZHJ：如果是setter方法
                 Class<?> type = setter.getParameterTypes()[0];
                 String property = StringUtils.camelToSplitName(name.substring(3, 4).toLowerCase() + name.substring(4), "-");
                 props.add(property);
@@ -156,12 +165,13 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                         || !type.equals(getter.getReturnType())) {
                     continue;
                 }
-                if ("parameters".equals(property)) {
-                    parameters = parseParameters(element.getChildNodes(), beanDefinition);
-                } else if ("methods".equals(property)) {
-                    parseMethods(id, element.getChildNodes(), beanDefinition, parserContext);
-                } else if ("arguments".equals(property)) {
-                    parseArguments(id, element.getChildNodes(), beanDefinition, parserContext);
+                // ZHJ：需要解析子标签（子节点）
+                if ("parameters".equals(property)) {// 解析自定义参数
+                    parameters = parseParameters(element.getChildNodes(), beanDefinition); // ZHJ：拿到parameters就返回
+                } else if ("methods".equals(property)) {// 解析方法
+                    parseMethods(id, element.getChildNodes(), beanDefinition, parserContext);// ZHJ：将method放入当前对象 beanDefinition
+                } else if ("arguments".equals(property)) {// ZHJ TODO 什么作用？
+                    parseArguments(id, element.getChildNodes(), beanDefinition, parserContext);// ZHJ：将method放入当前对象 beanDefinition
                 } else {
                     String value = element.getAttribute(property);
                     if (value != null) {
@@ -179,7 +189,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                 parseMultiRef("protocols", value, beanDefinition, parserContext);
                             } else {
                                 Object reference;
-                                if (isPrimitive(type)) {
+                                if (isPrimitive(type)) {//是否基本类型
                                     if ("async".equals(property) && "false".equals(value)
                                             || "timeout".equals(property) && "0".equals(value)
                                             || "delay".equals(property) && "0".equals(value)
@@ -272,7 +282,9 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         beanDefinition.getPropertyValues().addPropertyValue(property, list);
     }
 
-    private static void parseNested(Element element, ParserContext parserContext, Class<?> beanClass, boolean required, String tag, String property, String ref, BeanDefinition beanDefinition) {
+    // ZHJ：递归解析子节点
+    private static void parseNested(Element element, ParserContext parserContext, Class<?> beanClass, boolean required, String tag, String property,
+                                    String ref, BeanDefinition beanDefinition) {
         NodeList nodeList = element.getChildNodes();
         if (nodeList != null && nodeList.getLength() > 0) {
             boolean first = true;
@@ -288,8 +300,9 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                 beanDefinition.getPropertyValues().addPropertyValue("default", "false");
                             }
                         }
-                        BeanDefinition subDefinition = parse((Element) node, parserContext, beanClass, required);
+                        BeanDefinition subDefinition = parse((Element) node, parserContext, beanClass, required);// ZHj：递归子节点
                         if (subDefinition != null && ref != null && ref.length() > 0) {
+                            // ZHJ：子节点添加provider属性，关联父节点Provider对象
                             subDefinition.getPropertyValues().addPropertyValue(property, new RuntimeBeanReference(ref));
                         }
                     }
@@ -298,6 +311,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         }
     }
 
+    // ZHJ 干啥用
     private static void parseProperties(NodeList nodeList, RootBeanDefinition beanDefinition) {
         if (nodeList != null && nodeList.getLength() > 0) {
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -324,6 +338,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
     }
 
     @SuppressWarnings("unchecked")
+    // ZHJ：拿到parameters就返回
     private static ManagedMap parseParameters(NodeList nodeList, RootBeanDefinition beanDefinition) {
         if (nodeList != null && nodeList.getLength() > 0) {
             ManagedMap parameters = null;
@@ -368,7 +383,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                             methods = new ManagedList();
                         }
                         BeanDefinition methodBeanDefinition = parse(((Element) node),
-                                parserContext, MethodConfig.class, false);
+                                parserContext, MethodConfig.class, false);// ZHJ：递归解析Method标签
                         String name = id + "." + methodName;
                         BeanDefinitionHolder methodBeanDefinitionHolder = new BeanDefinitionHolder(
                                 methodBeanDefinition, name);
