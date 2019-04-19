@@ -192,9 +192,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             throw new IllegalStateException("<dubbo:reference interface=\"\" /> interface not allow null!");
         }
         // get consumer's global configuration
-        checkDefault();
+        checkDefault(); // ZHJ Consumer 标签
         appendProperties(this);
-        if (getGeneric() == null && getConsumer() != null) {
+        if (getGeneric() == null && getConsumer() != null) {// 设置是否泛化调用
             setGeneric(getConsumer().getGeneric());
         }
         if (ProtocolUtils.isGeneric(getGeneric())) {
@@ -206,14 +206,16 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
-            checkInterfaceAndMethods(interfaceClass, methods);
+            checkInterfaceAndMethods(interfaceClass, methods);// 接口检查
         }
-        String resolve = System.getProperty(interfaceName);
+
+        // ZHJ 处理resolve属性，覆盖url 开始 =================
+        String resolve = System.getProperty(interfaceName);// 先取System.getProperty(interfaceName)，解析器
         String resolveFile = null;
         if (resolve == null || resolve.length() == 0) {
-            resolveFile = System.getProperty("dubbo.resolve.file");
+            resolveFile = System.getProperty("dubbo.resolve.file");// 取不到取System.getProperty("dubbo.resolve.file")，得到文件
             if (resolveFile == null || resolveFile.length() == 0) {
-                File userResolveFile = new File(new File(System.getProperty("user.home")), "dubbo-resolve.properties");
+                File userResolveFile = new File(new File(System.getProperty("user.home")), "dubbo-resolve.properties");//取不到读文件，得到文件
                 if (userResolveFile.exists()) {
                     resolveFile = userResolveFile.getAbsolutePath();
                 }
@@ -233,7 +235,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                         logger.warn(e.getMessage(), e);
                     }
                 }
-                resolve = properties.getProperty(interfaceName);
+                resolve = properties.getProperty(interfaceName);// 从文件读取属性
             }
         }
         if (resolve != null && resolve.length() > 0) {
@@ -246,7 +248,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 }
             }
         }
-        if (consumer != null) {
+        // ZHJ 处理resolve属性，覆盖url 结束 END ===============
+
+        if (consumer != null) {// 参数补充
             if (application == null) {
                 application = consumer.getApplication();
             }

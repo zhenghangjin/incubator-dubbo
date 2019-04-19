@@ -59,7 +59,7 @@ public abstract class AbstractConfig implements Serializable {
     private static final Pattern PATTERN_NAME_HAS_SYMBOL = Pattern.compile("[:*,/\\-._0-9a-zA-Z]+");
 
     private static final Pattern PATTERN_KEY = Pattern.compile("[*,\\-._0-9a-zA-Z]+");
-    private static final Map<String, String> legacyProperties = new HashMap<String, String>();
+    private static final Map<String, String> legacyProperties = new HashMap<String, String>();// 遗留属性  做啥用的？
     private static final String[] SUFFIXES = new String[]{"Config", "Bean"};
 
     static {
@@ -97,6 +97,13 @@ public abstract class AbstractConfig implements Serializable {
         return value;
     }
 
+    /**
+     * ZHJ 为当前对象执行setting方法，添加 properties 文件的属性
+     * 先 prefix + config.getId() + "." + property
+     * 再 pn = prefix + property;
+     * getter方法执行为空，获取配置文件
+     * 如果有值，进行覆盖
+     */
     protected static void appendProperties(AbstractConfig config) {
         if (config == null) {
             return;
@@ -147,7 +154,7 @@ public abstract class AbstractConfig implements Serializable {
                                 if (value == null || value.length() == 0) {
                                     String legacyKey = legacyProperties.get(prefix + property);
                                     if (legacyKey != null && legacyKey.length() > 0) {
-                                        value = convertLegacyValue(legacyKey, ConfigUtils.getProperty(legacyKey));
+                                        value = convertLegacyValue(legacyKey, ConfigUtils.getProperty(legacyKey));//覆盖遗留值
                                     }
                                 }
 
@@ -181,7 +188,7 @@ public abstract class AbstractConfig implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {
+    protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {// 做甚
         if (config == null) {
             return;
         }
@@ -302,7 +309,7 @@ public abstract class AbstractConfig implements Serializable {
                 || type == Object.class;
     }
 
-    private static Object convertPrimitive(Class<?> type, String value) {
+    private static Object convertPrimitive(Class<?> type, String value) {// ZHJ 转换原语
         if (type == char.class || type == Character.class) {
             return value.length() > 0 ? value.charAt(0) : '\0';
         } else if (type == boolean.class || type == Boolean.class) {
