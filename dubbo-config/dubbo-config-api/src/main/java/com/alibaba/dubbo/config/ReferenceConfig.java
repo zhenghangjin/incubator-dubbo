@@ -183,6 +183,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     }
 
     private void init() {
+        logger.error("test-- ReferenceConfig init initialized=" + initialized);
         if (initialized) {
             return;
         }

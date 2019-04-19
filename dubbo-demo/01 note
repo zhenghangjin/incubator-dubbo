@@ -9,13 +9,12 @@
 3、为何两者都能使用：
     （1）RuntimeBeanReference 解析阶段依赖其他对象的实例，但是实例还没创建完毕
     （2）BeanDefinitionHolder 作用？
-4、对象实现：FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean
+4、对象实现执行顺序专题：FactoryBean, ApplicationContextAware, InitializingBean, DisposableBean
     (1) FactoryBean：FactoryBean跟普通Bean不同，其返回的对象不是指定类的一个实例，而是该FactoryBean的getObject方法所返回的对象。创建出来的对象是否属于单例由isSingleton中的返回决定。
     (2) ApplicationContextAware：
     (3) InitializingBean, DisposableBean 类的初始化和销毁
     同一个Bean中：先构造函数 --> 然后是set方法注入 --> ApplicationContextAware#setApplicationContext()
         --> InitializingBean的afterPropertiesSet方法 --> init-method方法
-
 
     ReferenceBean->Constructor              invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
     ReferenceBean->setApplicationContext    invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
@@ -26,3 +25,7 @@
     ReferenceBean->getObjectType            invoke...interface com.alibaba.dubbo.demo.DemoService2, dubbo version: 2.0.0, current host: 192.168.99.138
     ReferenceBean->isSingleton              invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
     ReferenceBean->getObject                invoke..., dubbo version: 2.0.0, current host: 192.168.99.138
+
+5、ClassPathXmlApplicationContext
+    您可以创建一个实现的类的bean继承ApplicationListener<ContextStartedEvent>
+    当您调用时start()，ApplicationContext将发布此类事件，并且所有ApplicationListener注册的bean ContextStartedEvent（如果在上下文中找到它们将自动注册）将收到通知。
