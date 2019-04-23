@@ -183,6 +183,9 @@ public abstract class AbstractConfig implements Serializable {
         return tag;
     }
 
+    /**
+     * 遍历config对象的getter方法，执行得到值把值加入到Map中
+     */
     protected static void appendParameters(Map<String, String> parameters, Object config) {
         appendParameters(parameters, config, null);
     }
@@ -258,6 +261,9 @@ public abstract class AbstractConfig implements Serializable {
         appendAttributes(parameters, config, null);
     }
 
+    /**
+     * 执行config的getter方法，取到值，将值加入到Map中parameters
+     */
     protected static void appendAttributes(Map<Object, Object> parameters, Object config, String prefix) {
         if (config == null) {
             return;

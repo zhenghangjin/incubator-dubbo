@@ -191,8 +191,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (interfaceName == null || interfaceName.length() == 0) {
             throw new IllegalStateException("<dubbo:reference interface=\"\" /> interface not allow null!");
         }
-        // get consumer's global configuration
-        checkDefault(); // ZHJ Consumer 标签
+        // 获取consumer标签的全局配置 ZHJ：检查consumer，并赋值properties文件的属性
+        checkDefault();
         appendProperties(this);
         if (getGeneric() == null && getConsumer() != null) {// 设置是否泛化调用
             setGeneric(getConsumer().getGeneric());
@@ -206,7 +206,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
-            checkInterfaceAndMethods(interfaceClass, methods);// 接口检查
+            checkInterfaceAndMethods(interfaceClass, methods);// 检查是否是接口，检查是否有对应的方法
         }
 
         // ZHJ 处理resolve属性，覆盖url 开始 =================
@@ -264,7 +264,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 monitor = consumer.getMonitor();
             }
         }
-        if (module != null) {
+        if (module != null) {// 参数补充
             if (registries == null) {
                 registries = module.getRegistries();
             }
@@ -272,7 +272,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 monitor = module.getMonitor();
             }
         }
-        if (application != null) {
+        if (application != null) {// 参数补充
             if (registries == null) {
                 registries = application.getRegistries();
             }
@@ -280,8 +280,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 monitor = application.getMonitor();
             }
         }
-        checkApplication();
-        checkStubAndMock(interfaceClass);
+        checkApplication();// 检查application，并附上properties文件的属性值
+        checkStubAndMock(interfaceClass);// stub mock检查
+        // ZHJ:构建一个 map
         Map<String, String> map = new HashMap<String, String>();
         Map<Object, Object> attributes = new HashMap<Object, Object>();
         map.put(Constants.SIDE_KEY, Constants.CONSUMER_SIDE);
