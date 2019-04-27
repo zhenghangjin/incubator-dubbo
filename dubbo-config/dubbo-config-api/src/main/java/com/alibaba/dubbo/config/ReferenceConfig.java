@@ -283,8 +283,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         checkApplication();// 检查application，并附上properties文件的属性值
         checkStubAndMock(interfaceClass);// stub mock检查
         // ZHJ:构建一个 map
-        Map<String, String> map = new HashMap<String, String>();
-        Map<Object, Object> attributes = new HashMap<Object, Object>();
+        Map<String, String> map = new HashMap<String, String>(); // ZHJ map 用来构建spi proxy代理
+        Map<Object, Object> attributes = new HashMap<Object, Object>(); // ZHJ attribute 放在StaticContext上下文中
         map.put(Constants.SIDE_KEY, Constants.CONSUMER_SIDE);
         map.put(Constants.DUBBO_VERSION_KEY, Version.getVersion());
         map.put(Constants.TIMESTAMP_KEY, String.valueOf(System.currentTimeMillis()));
