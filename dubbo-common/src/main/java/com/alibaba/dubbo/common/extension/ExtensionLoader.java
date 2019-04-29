@@ -83,7 +83,7 @@ public class ExtensionLoader<T> {
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();// 步骤3的读取结果，主要是无参构造器
 
     private final Map<String, Activate> cachedActivates = new ConcurrentHashMap<String, Activate>();// 3、@Activate注解, 缓存activate
-    private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
+    private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();// 先获取spi配置文件的无参构造函数的实现类集合，然后包装有参构造函数
     private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
     private volatile Class<?> cachedAdaptiveClass = null; // 1、实现类带有@Adaptive注解
     private String cachedDefaultName;// @SPI注解的value为默认值
@@ -288,6 +288,7 @@ public class ExtensionLoader<T> {
     /**
      * Find the extension with the given name. If the specified name is not found, then {@link IllegalStateException}
      * will be thrown.
+     * 先获取spi配置文件的无参构造函数的实现类集合，然后包装有参构造函数
      */
     @SuppressWarnings("unchecked")
     public T getExtension(String name) {
@@ -306,7 +307,7 @@ public class ExtensionLoader<T> {
             synchronized (holder) {
                 instance = holder.get();
                 if (instance == null) {
-                    instance = createExtension(name);
+                    instance = createExtension(name);// 先获取spi配置文件的无参构造函数的实现类集合，然后包装有参构造函数
                     holder.set(instance);
                 }
             }
@@ -347,45 +348,6 @@ public class ExtensionLoader<T> {
     public String getDefaultExtensionName() {
         getExtensionClasses();
         return cachedDefaultName;
-    }
-
-    /**
-     * Register new extension via API
-     *
-     * @param name  extension name
-     * @param clazz extension class
-     * @throws IllegalStateException when extension with the same name has already been registered.
-     */
-    public void addExtension(String name, Class<?> clazz) {
-        getExtensionClasses(); // load classes
-
-        if (!type.isAssignableFrom(clazz)) {
-            throw new IllegalStateException("Input type " +
-                    clazz + "not implement Extension " + type);
-        }
-        if (clazz.isInterface()) {
-            throw new IllegalStateException("Input type " +
-                    clazz + "can not be interface!");
-        }
-
-        if (!clazz.isAnnotationPresent(Adaptive.class)) {
-            if (StringUtils.isBlank(name)) {
-                throw new IllegalStateException("Extension name is blank (Extension " + type + ")!");
-            }
-            if (cachedClasses.get().containsKey(name)) {
-                throw new IllegalStateException("Extension name " +
-                        name + " already existed(Extension " + type + ")!");
-            }
-
-            cachedNames.put(clazz, name);
-            cachedClasses.get().put(name, clazz);
-        } else {
-            if (cachedAdaptiveClass != null) {
-                throw new IllegalStateException("Adaptive Extension already existed(Extension " + type + ")!");
-            }
-
-            cachedAdaptiveClass = clazz;
-        }
     }
 
     /**
@@ -487,7 +449,7 @@ public class ExtensionLoader<T> {
 
     @SuppressWarnings("unchecked")
     private T createExtension(String name) {
-        Class<?> clazz = getExtensionClasses().get(name);
+        Class<?> clazz = getExtensionClasses().get(name);// 先获取spi配置文件的无参构造函数的实现类集合
         if (clazz == null) {
             throw findException(name);
         }
@@ -501,7 +463,7 @@ public class ExtensionLoader<T> {
             Set<Class<?>> wrapperClasses = cachedWrapperClasses;
             if (wrapperClasses != null && wrapperClasses.size() > 0) {
                 for (Class<?> wrapperClass : wrapperClasses) {
-                    instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
+                    instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));// ZHJ 包装对象
                 }
             }
             return instance;
@@ -571,6 +533,7 @@ public class ExtensionLoader<T> {
      * synchronized in getExtensionClasses
      * 1、获取cacheDefaultName，从接口的@SPI注解获取
      * 2、加载spi配置文件，对对象进行缓存
+     * 返回值 只有那些无参构造函数
      */
     private Map<String, Class<?>> loadExtensionClasses() {
         // ZHJ 获取cacheDefaultName，从接口的@SPI注解获取
