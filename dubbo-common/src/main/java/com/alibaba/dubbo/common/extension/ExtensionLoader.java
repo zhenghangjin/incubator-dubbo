@@ -433,6 +433,7 @@ public class ExtensionLoader<T> {
 
     /**
      * 获取 Adaptive Extension
+     * 获取有@Adaptive修饰的类，否则自己创建代理类
      */
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {

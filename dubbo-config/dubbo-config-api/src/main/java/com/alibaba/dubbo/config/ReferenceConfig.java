@@ -209,7 +209,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             checkInterfaceAndMethods(interfaceClass, methods);// 检查是否是接口，检查是否有对应的方法
         }
 
-        // ZHJ 处理resolve属性，覆盖url 开始 =================
+        // ZHJ 处理resolve属性，覆盖url 开始，主要是点对点通信的一种方式 =================
         String resolve = System.getProperty(interfaceName);// 先取System.getProperty(interfaceName)，解析器
         String resolveFile = null;
         if (resolve == null || resolve.length() == 0) {
@@ -358,13 +358,13 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             isJvmRefer = isInjvm().booleanValue();
         }
 
-        if (isJvmRefer) {
+        if (isJvmRefer) {// 内部调用
             URL url = new URL(Constants.LOCAL_PROTOCOL, NetUtils.LOCALHOST, 0, interfaceClass.getName()).addParameters(map);
             invoker = refprotocol.refer(interfaceClass, url);
             if (logger.isInfoEnabled()) {
                 logger.info("Using injvm service " + interfaceClass.getName());
             }
-        } else {
+        } else {// 网络调用
             if (url != null && url.length() > 0) { // user specified URL, could be peer-to-peer address, or register center's address.
                 String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
                 if (us != null && us.length > 0) {
@@ -396,9 +396,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 }
             }
 
-            if (urls.size() == 1) {
+            if (urls.size() == 1) {// ？
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
-            } else {
+            } else {// ？
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
                 for (URL url : urls) {
