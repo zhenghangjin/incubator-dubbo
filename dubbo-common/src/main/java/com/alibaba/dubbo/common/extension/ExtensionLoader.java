@@ -731,19 +731,19 @@ public class ExtensionLoader<T> {
 
             Adaptive adaptiveAnnotation = method.getAnnotation(Adaptive.class);
             StringBuilder code = new StringBuilder(512);
-            if (adaptiveAnnotation == null) {
+            if (adaptiveAnnotation == null) {// 方法没有注解@Adaptive，直接throw new Exception
                 code.append("throw new UnsupportedOperationException(\"method ")
                         .append(method.toString()).append(" of interface ")
                         .append(type.getName()).append(" is not adaptive method!\");");
-            } else {
-                int urlTypeIndex = -1;
+            } else {// 方法有注解@Adaptive
+                int urlTypeIndex = -1;// URL在第几个入参
                 for (int i = 0; i < pts.length; ++i) {
                     if (pts[i].equals(URL.class)) {
                         urlTypeIndex = i;
                         break;
                     }
                 }
-                // found parameter in URL type
+                // found parameter in URL type 有URL入参
                 if (urlTypeIndex != -1) {
                     // Null Point check
                     String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"url == null\");",
@@ -753,7 +753,7 @@ public class ExtensionLoader<T> {
                     s = String.format("\n%s url = arg%d;", URL.class.getName(), urlTypeIndex);
                     code.append(s);
                 }
-                // did not find parameter in URL type
+                // did not find parameter in URL type 无URL入参，入参的getter方法一定有，没有报异常
                 else {
                     String attribMethod = null;
 
@@ -789,9 +789,9 @@ public class ExtensionLoader<T> {
 
                     s = String.format("%s url = arg%d.%s();", URL.class.getName(), urlTypeIndex, attribMethod);
                     code.append(s);
-                }
+                }// did not find parameter in URL type 无URL入参 END
 
-                String[] value = adaptiveAnnotation.value();
+                String[] value = adaptiveAnnotation.value();// ZHJ 设置key为className
                 // value is not set, use the value generated from class name as the key
                 if (value.length == 0) {
                     char[] charArray = type.getSimpleName().toCharArray();
@@ -810,7 +810,7 @@ public class ExtensionLoader<T> {
                 }
 
                 boolean hasInvocation = false;
-                for (int i = 0; i < pts.length; ++i) {
+                for (int i = 0; i < pts.length; ++i) {// ZHJ 如果有Invocation属性，做空判断，并且标记hasInvocation=true
                     if (pts[i].getName().equals("com.alibaba.dubbo.rpc.Invocation")) {
                         // Null Point check
                         String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"invocation == null\");", i);
