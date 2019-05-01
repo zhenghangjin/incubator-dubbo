@@ -22,6 +22,24 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 /**
  * Protocol. (API/SPI, Singleton, ThreadSafe)
+ *
+ * 两个带构造函数
+ * filter=com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper
+ * listener=com.alibaba.dubbo.rpc.protocol.ProtocolListenerWrapper
+ * qos=com.alibaba.dubbo.qos.protocol.QosProtocolWrapper
+ *
+ * mock=com.alibaba.dubbo.rpc.support.MockProtocol
+ * registry=com.alibaba.dubbo.registry.integration.RegistryProtocol
+ * dubbo=com.alibaba.dubbo.rpc.protocol.dubbo.DubboProtocol
+ * com.alibaba.dubbo.rpc.protocol.http.HttpProtocol
+ * injvm=com.alibaba.dubbo.rpc.protocol.injvm.InjvmProtocol
+ * redis=com.alibaba.dubbo.rpc.protocol.redis.RedisProtocol
+ * rmi=com.alibaba.dubbo.rpc.protocol.rmi.RmiProtocol
+ * thrift=com.alibaba.dubbo.rpc.protocol.thrift.ThriftProtocol
+ *
+ * hessian=com.alibaba.dubbo.rpc.protocol.hessian.HessianProtocol
+ * memcached=com.alibaba.dubbo.rpc.protocol.memcached.MemcachedProtocol
+ * com.alibaba.dubbo.rpc.protocol.webservice.WebServiceProtocol
  */
 @SPI("dubbo")
 public interface Protocol {

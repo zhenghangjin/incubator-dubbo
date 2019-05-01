@@ -473,6 +473,11 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 遍历setter方法列表，然后从ExtensionFactory获取指，有的话就set
+     * @param instance
+     * @return
+     */
     private T injectExtension(T instance) {
         try {
             if (objectFactory != null) {

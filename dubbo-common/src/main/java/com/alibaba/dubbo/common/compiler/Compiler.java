@@ -21,6 +21,10 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 /**
  * Compiler. (SPI, Singleton, ThreadSafe)
+ *
+ * adaptive=com.alibaba.dubbo.common.compiler.support.AdaptiveCompiler
+ * jdk=com.alibaba.dubbo.common.compiler.support.JdkCompiler
+ * javassist=com.alibaba.dubbo.common.compiler.support.JavassistCompiler
  */
 @SPI("javassist")
 public interface Compiler {
