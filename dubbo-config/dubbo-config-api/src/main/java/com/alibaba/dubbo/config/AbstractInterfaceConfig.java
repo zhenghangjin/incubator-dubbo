@@ -156,6 +156,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
     }
 
+    /**
+     * 生成URL
+     * URL的 protocol 强行赋值：registry
+     * URL parameter添加registry=zookeeper键值对
+     */
     protected List<URL> loadRegistries(boolean provider) {
         checkRegistry();// 为啥需要check?
         List<URL> registryList = new ArrayList<URL>();
@@ -180,7 +185,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                     if (ConfigUtils.getPid() > 0) {
                         map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
                     }
-                    if (!map.containsKey("protocol")) {
+                    if (!map.containsKey("protocol")) { // 如果没有protocol的键值对，优先set remote, 次之设置dubbo
                         if (ExtensionLoader.getExtensionLoader(RegistryFactory.class).hasExtension("remote")) {
                             map.put("protocol", "remote");
                         } else {
@@ -191,7 +196,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                     for (URL url : urls) {
                         url = url.addParameter(Constants.REGISTRY_KEY, url.getProtocol());
                         url = url.setProtocol(Constants.REGISTRY_PROTOCOL);
-                        if ((provider && url.getParameter(Constants.REGISTER_KEY, true))
+                        if ((provider && url.getParameter(Constants.REGISTER_KEY, true))// 提供者要注册 或者 消费者要订阅
                                 || (!provider && url.getParameter(Constants.SUBSCRIBE_KEY, true))) {
                             registryList.add(url);
                         }

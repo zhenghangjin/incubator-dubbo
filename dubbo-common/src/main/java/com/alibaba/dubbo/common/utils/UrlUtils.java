@@ -27,6 +27,11 @@ import java.util.Set;
 
 public class UrlUtils {
 
+    /**
+     * 使用address创建url，一般带有protocol, host, port
+     * 1 将default的protocol，username，password，port，path，host 属性取出，覆盖URL的基本属性
+     * 2 default剩余的属性，覆盖URL的parameter属性
+     */
     public static URL parseURL(String address, Map<String, String> defaults) {
         if (address == null || address.length() == 0) {
             return null;

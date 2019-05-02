@@ -87,17 +87,17 @@ public class ProtocolFilterWrapper implements Protocol {
     }
 
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
-        if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
+        if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) { // registry 协议的逻辑
             return protocol.export(invoker);
         }
-        return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
+        return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));// 其他逻辑
     }
 
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
-        if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
+        if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) { // registry 协议的逻辑
             return protocol.refer(type, url);
         }
-        return buildInvokerChain(protocol.refer(type, url), Constants.REFERENCE_FILTER_KEY, Constants.CONSUMER);
+        return buildInvokerChain(protocol.refer(type, url), Constants.REFERENCE_FILTER_KEY, Constants.CONSUMER); // 其他逻辑
     }
 
     public void destroy() {
