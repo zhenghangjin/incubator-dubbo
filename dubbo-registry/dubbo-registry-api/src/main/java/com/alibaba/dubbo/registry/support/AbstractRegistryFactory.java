@@ -80,7 +80,7 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
         }
     }
 
-    public Registry getRegistry(URL url) {
+    public Registry getRegistry(URL url) { // 获取注册中心对象，使用模板方法设计模式
         url = url.setPath(RegistryService.class.getName())
                 .addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName())
                 .removeParameters(Constants.EXPORT_KEY, Constants.REFER_KEY);

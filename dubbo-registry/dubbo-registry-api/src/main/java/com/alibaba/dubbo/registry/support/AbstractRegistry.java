@@ -91,7 +91,7 @@ public abstract class AbstractRegistry implements Registry {
         }
         this.file = file;
         loadProperties();
-        notify(url.getBackupUrls());
+        notify(url.getBackupUrls());// todo ZHJ 如何通知？？
     }
 
     protected static List<URL> filterEmpty(URL url, List<URL> urls) {
@@ -341,6 +341,9 @@ public abstract class AbstractRegistry implements Registry {
         }
     }
 
+    /**
+     * TODO 通知到备份的URL
+     */
     protected void notify(List<URL> urls) {
         if (urls == null || urls.isEmpty()) return;
 
