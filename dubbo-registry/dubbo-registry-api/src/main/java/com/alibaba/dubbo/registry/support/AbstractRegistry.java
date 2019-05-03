@@ -68,8 +68,8 @@ public abstract class AbstractRegistry implements Registry {
     // Is it synchronized to save the file
     private final boolean syncSaveFile;
     private final AtomicLong lastCacheChanged = new AtomicLong();
-    private final Set<URL> registered = new ConcurrentHashSet<URL>();
-    private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
+    private final Set<URL> registered = new ConcurrentHashSet<URL>();// 已注册集合
+    private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();// 已订阅集合
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();
     private URL registryUrl;
     // Local disk cache file
@@ -260,7 +260,7 @@ public abstract class AbstractRegistry implements Registry {
         }
         return result;
     }
-
+    // 向需要恢复注册的Set集合中添加URL，zk状态变更时检查该set,交给定时任务处理
     public void register(URL url) {
         if (url == null) {
             throw new IllegalArgumentException("register url == null");
@@ -268,9 +268,10 @@ public abstract class AbstractRegistry implements Registry {
         if (logger.isInfoEnabled()) {
             logger.info("Register: " + url);
         }
-        registered.add(url);
+        registered.add(url);// 已注册集合
     }
 
+    // 向需要恢复注册的Set集合中删除URL，zk状态变更时检查该set,交给定时任务处理
     public void unregister(URL url) {
         if (url == null) {
             throw new IllegalArgumentException("unregister url == null");
@@ -280,7 +281,7 @@ public abstract class AbstractRegistry implements Registry {
         }
         registered.remove(url);
     }
-
+    // 订阅 zk状态变更时检查该set,交给定时任务处理
     public void subscribe(URL url, NotifyListener listener) {
         if (url == null) {
             throw new IllegalArgumentException("subscribe url == null");

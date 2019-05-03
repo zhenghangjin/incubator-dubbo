@@ -81,9 +81,9 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
     }
 
     public Registry getRegistry(URL url) { // 获取注册中心对象，使用模板方法设计模式
-        url = url.setPath(RegistryService.class.getName())
-                .addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName())
-                .removeParameters(Constants.EXPORT_KEY, Constants.REFER_KEY);
+        url = url.setPath(RegistryService.class.getName())// set path属性
+                .addParameter(Constants.INTERFACE_KEY, RegistryService.class.getName())// add Parameter interface=ClassName
+                .removeParameters(Constants.EXPORT_KEY, Constants.REFER_KEY);// remove Parameter export and refer
         String key = url.toServiceString();
         // Lock the registry access process to ensure a single instance of the registry
         LOCK.lock();
@@ -92,7 +92,7 @@ public abstract class AbstractRegistryFactory implements RegistryFactory {
             if (registry != null) {
                 return registry;
             }
-            registry = createRegistry(url);
+            registry = createRegistry(url);// 创建注册中心对象（里边有一个zk客户端监听事件，并且有定时任务处理）
             if (registry == null) {
                 throw new IllegalStateException("Can not create registry " + url);
             }

@@ -183,7 +183,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     }
 
     private void init() {
-        logger.error("test-- ReferenceConfig init initialized=" + initialized);
+        // logger.error("test-- ReferenceConfig init initialized=" + initialized);
         if (initialized) {
             return;
         }
@@ -397,9 +397,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 }
             }
 
-            if (urls.size() == 1) {// ？
+            if (urls.size() == 1) {// 只有一个注册中心地址
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
-            } else {// ？
+            } else {// 多个配置中心地址
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
                 for (URL url : urls) {

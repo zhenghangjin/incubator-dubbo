@@ -46,16 +46,16 @@ public abstract class FailbackRegistry extends AbstractRegistry {
 
     // Timer for failure retry, regular check if there is a request for failure, and if there is, an unlimited retry
     private final ScheduledFuture<?> retryFuture;
-
-    private final Set<URL> failedRegistered = new ConcurrentHashSet<URL>();
-
-    private final Set<URL> failedUnregistered = new ConcurrentHashSet<URL>();
-
-    private final ConcurrentMap<URL, Set<NotifyListener>> failedSubscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
-
-    private final ConcurrentMap<URL, Set<NotifyListener>> failedUnsubscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
-
-    private final ConcurrentMap<URL, Map<NotifyListener, List<URL>>> failedNotified = new ConcurrentHashMap<URL, Map<NotifyListener, List<URL>>>();
+    // 注册相关
+    private final Set<URL> failedRegistered = new ConcurrentHashSet<URL>();// 注册中心的定时任务会轮询该集合，FailbackRegistry的zk会给改属性赋值
+    // 注册相关
+    private final Set<URL> failedUnregistered = new ConcurrentHashSet<URL>();// 注册中心定时任务处理
+    // 订阅相关
+    private final ConcurrentMap<URL, Set<NotifyListener>> failedSubscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();// 注册中心的定时任务会轮询该集合
+    // 订阅相关
+    private final ConcurrentMap<URL, Set<NotifyListener>> failedUnsubscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();// 注册中心定时任务处理
+    // 订阅相关
+    private final ConcurrentMap<URL, Map<NotifyListener, List<URL>>> failedNotified = new ConcurrentHashMap<URL, Map<NotifyListener, List<URL>>>();// 注册中心定时任务处理
 
     public FailbackRegistry(URL url) {
         super(url);
@@ -122,9 +122,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
 
     @Override
     public void register(URL url) {
-        super.register(url);
-        failedRegistered.remove(url);
-        failedUnregistered.remove(url);
+        super.register(url);// 向需要恢复注册的Set集合中添加URL，zk状态变更时检查该set,交给定时任务处理
+        failedRegistered.remove(url);// 清空
+        failedUnregistered.remove(url);// 清空
         try {
             // Sending a registration request to the server side
             doRegister(url);
@@ -273,7 +273,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         super.notify(url, listener, urls);
     }
 
-    @Override
+    @Override// 连接状态有变化，调用该方法修改全局变量
     protected void recover() throws Exception {
         // register
         Set<URL> recoverRegistered = new HashSet<URL>(getRegistered());
@@ -282,7 +282,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
                 logger.info("Recover register url " + recoverRegistered);
             }
             for (URL url : recoverRegistered) {
-                failedRegistered.add(url);
+                failedRegistered.add(url); // 注册中心的定时任务会轮询该Set
             }
         }
         // subscribe
@@ -442,9 +442,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     }
 
     // ==== Template method ====
-
+    // 创建zk节点
     protected abstract void doRegister(URL url);
-
+    // 删除zk节点
     protected abstract void doUnregister(URL url);
 
     protected abstract void doSubscribe(URL url, NotifyListener listener);

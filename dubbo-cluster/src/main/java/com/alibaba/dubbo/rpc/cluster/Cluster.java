@@ -28,6 +28,16 @@ import com.alibaba.dubbo.rpc.cluster.support.FailoverCluster;
  * <a href="http://en.wikipedia.org/wiki/Computer_cluster">Cluster</a>
  * <a href="http://en.wikipedia.org/wiki/Fault-tolerant_system">Fault-Tolerant</a>
  *
+ * mock=com.alibaba.dubbo.rpc.cluster.support.wrapper.MockClusterWrapper
+ *
+ * failover=com.alibaba.dubbo.rpc.cluster.support.FailoverCluster
+ * failfast=com.alibaba.dubbo.rpc.cluster.support.FailfastCluster
+ * failsafe=com.alibaba.dubbo.rpc.cluster.support.FailsafeCluster
+ * failback=com.alibaba.dubbo.rpc.cluster.support.FailbackCluster
+ * forking=com.alibaba.dubbo.rpc.cluster.support.ForkingCluster
+ * available=com.alibaba.dubbo.rpc.cluster.support.AvailableCluster
+ * mergeable=com.alibaba.dubbo.rpc.cluster.support.MergeableCluster
+ * broadcast=com.alibaba.dubbo.rpc.cluster.support.BroadcastCluster
  */
 @SPI(FailoverCluster.NAME)
 public interface Cluster {

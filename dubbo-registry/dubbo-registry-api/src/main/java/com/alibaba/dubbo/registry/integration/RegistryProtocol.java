@@ -265,9 +265,9 @@ public class RegistryProtocol implements Protocol {
 
     @SuppressWarnings("unchecked")
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
-        // todo ZHJ 为什么setProtocol，然后把一个parameter删掉？？
+        // TODO ZHJ 把registry Parameter覆盖protocol属性，然后把registry Parameter删掉
         url = url.setProtocol(url.getParameter(Constants.REGISTRY_KEY, Constants.DEFAULT_REGISTRY)).removeParameter(Constants.REGISTRY_KEY);
-        Registry registry = registryFactory.getRegistry(url);
+        Registry registry = registryFactory.getRegistry(url); // 创建注册中心对象（里边有一个zk客户端监听事件，并且有定时任务处理）
         if (RegistryService.class.equals(type)) {
             return proxyFactory.getInvoker((T) registry, type, url);
         }
@@ -281,7 +281,7 @@ public class RegistryProtocol implements Protocol {
                 return doRefer(getMergeableCluster(), registry, type, url);
             }
         }
-        return doRefer(cluster, registry, type, url);
+        return doRefer(cluster, registry, type, url);// 注册
     }
 
     private Cluster getMergeableCluster() {

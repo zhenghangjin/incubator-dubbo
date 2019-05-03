@@ -51,42 +51,42 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
 
     public ReferenceBean() {
         super();
-        logger.error("test-- ReferenceBean->构造函数1 invoke...");
+        // logger.error("test-- ReferenceBean->构造函数1 invoke...");
     }
 
     public ReferenceBean(Reference reference) {
         super(reference);
-        logger.error("test-- ReferenceBean->构造函数2 invoke...");
+        // logger.error("test-- ReferenceBean->构造函数2 invoke...");
     }
 
     // ZHJ：最新执行(1)
     public void setApplicationContext(ApplicationContext applicationContext) {
-        logger.error("test-- ReferenceBean->setApplicationContext invoke...");
+        // logger.error("test-- ReferenceBean->setApplicationContext invoke...");
         this.applicationContext = applicationContext;
         SpringExtensionFactory.addApplicationContext(applicationContext);
     }
 
     // ZHJ：位于InitializingBean -> afterPropertiesSet后(3)
     public Object getObject() throws Exception {
-        logger.error("test-- ReferenceBean->getObject invoke...");
+        // logger.error("test-- ReferenceBean->getObject invoke...");
         return get();
     }
 
     public Class<?> getObjectType() {
-        logger.error("test-- ReferenceBean->getObjectType invoke..." + getInterfaceClass());
+        // logger.error("test-- ReferenceBean->getObjectType invoke..." + getInterfaceClass());
         return getInterfaceClass();
     }
 
     @Parameter(excluded = true)
     public boolean isSingleton() {
-        logger.error("test-- ReferenceBean->isSingleton invoke...");
+        // logger.error("test-- ReferenceBean->isSingleton invoke...");
         return true;
     }
 
     @SuppressWarnings({"unchecked"})
     // ZHJ：位于setApplicationContext后(2)
     public void afterPropertiesSet() throws Exception {
-        logger.error("test-- ReferenceBean->afterPropertiesSet invoke...");
+        // logger.error("test-- ReferenceBean->afterPropertiesSet invoke...");
         if (getConsumer() == null) {
             Map<String, ConsumerConfig> consumerConfigMap = applicationContext == null ? null : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ConsumerConfig.class, false, false);
             if (consumerConfigMap != null && consumerConfigMap.size() > 0) {
@@ -187,6 +187,6 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
     @Override
     public void destroy() {
         // do nothing
-        logger.error("test-- ReferenceBean->destroy invoke...");
+        // logger.error("test-- ReferenceBean->destroy invoke...");
     }
 }

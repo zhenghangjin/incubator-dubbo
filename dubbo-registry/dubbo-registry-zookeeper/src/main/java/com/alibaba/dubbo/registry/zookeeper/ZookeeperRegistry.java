@@ -57,7 +57,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
     private final ZookeeperClient zkClient;
 
     public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) {
-        super(url);
+        super(url);// 启动任务，轮询failedRegistered，failedUnregistered，failedSubscribed，failedUnsubscribed，failedNotified
         if (url.isAnyHost()) {
             throw new IllegalStateException("registry address == null");
         }
@@ -66,8 +66,8 @@ public class ZookeeperRegistry extends FailbackRegistry {
             group = Constants.PATH_SEPARATOR + group;
         }
         this.root = group;
-        zkClient = zookeeperTransporter.connect(url);
-        zkClient.addStateListener(new StateListener() {
+        zkClient = zookeeperTransporter.connect(url); // ZHJ 创建原生zk客户端，并且添加事件
+        zkClient.addStateListener(new StateListener() { // 添加事件处理器
             public void stateChanged(int state) {
                 if (state == RECONNECTED) {
                     try {
