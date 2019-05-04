@@ -122,9 +122,9 @@ public abstract class FailbackRegistry extends AbstractRegistry {
 
     @Override
     public void register(URL url) {
-        super.register(url);// 向需要恢复注册的Set集合中添加URL，zk状态变更时检查该set,交给定时任务处理
-        failedRegistered.remove(url);// 清空
-        failedUnregistered.remove(url);// 清空
+        super.register(url);// （表示该URL已经注册，zk session重建需要创建该结点）向需要恢复注册的Set集合中添加URL，zk状态变更时检查该set,交给定时任务处理
+        failedRegistered.remove(url);// 清空该URL的其他记录
+        failedUnregistered.remove(url);// 清空该URL的其他记录
         try {
             // Sending a registration request to the server side
             doRegister(url);
@@ -248,7 +248,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
     }
 
     @Override
-    protected void notify(URL url, NotifyListener listener, List<URL> urls) {
+    protected void notify(URL url, NotifyListener listener, List<URL> urls) {// 用来通知子节点
         if (url == null) {
             throw new IllegalArgumentException("notify url == null");
         }
