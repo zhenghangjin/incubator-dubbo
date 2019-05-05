@@ -155,7 +155,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     }
 
     public void subscribe(URL url) {
-        setConsumerUrl(url);
+        setConsumerUrl(url);// 调用setter方法
         registry.subscribe(url, this);
     }
 
@@ -179,7 +179,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
-    public synchronized void notify(List<URL> urls) {
+    public synchronized void notify(List<URL> urls) {// 实现NotifyListener.notify 方法
         List<URL> invokerUrls = new ArrayList<URL>();
         List<URL> routerUrls = new ArrayList<URL>();
         List<URL> configuratorUrls = new ArrayList<URL>();
