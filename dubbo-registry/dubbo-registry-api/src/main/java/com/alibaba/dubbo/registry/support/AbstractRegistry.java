@@ -281,8 +281,10 @@ public abstract class AbstractRegistry implements Registry {
         }
         registered.remove(url);
     }
-    // 订阅 zk状态变更时检查该set,交给定时任务处理
-    // 把 NotifyListener 添加到已订阅集合中
+
+    /**
+     * 把 NotifyListener 添加到已订阅集合中，如果zk状态变更，需要重新创建这些zk节点（订阅zk状态变更时检查该set,交给定时任务处理）
+     */
     public void subscribe(URL url, NotifyListener listener) {
         if (url == null) {
             throw new IllegalArgumentException("subscribe url == null");

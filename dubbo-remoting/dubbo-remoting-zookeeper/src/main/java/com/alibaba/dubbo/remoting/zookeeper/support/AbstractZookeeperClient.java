@@ -36,7 +36,7 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
     private final URL url;
 
     private final Set<StateListener> stateListeners = new CopyOnWriteArraySet<StateListener>();
-
+    // TODO 本地存一份的作用是什么
     private final ConcurrentMap<String, ConcurrentMap<ChildListener, TargetChildListener>> childListeners = new ConcurrentHashMap<String, ConcurrentMap<ChildListener, TargetChildListener>>();
 
     private volatile boolean closed = false;
@@ -84,10 +84,10 @@ public abstract class AbstractZookeeperClient<TargetChildListener> implements Zo
         }
         TargetChildListener targetListener = listeners.get(listener);
         if (targetListener == null) {
-            listeners.putIfAbsent(listener, createTargetChildListener(path, listener));
+            listeners.putIfAbsent(listener, createTargetChildListener(path, listener));// 其实就是包装了一层
             targetListener = listeners.get(listener);
         }
-        return addTargetChildListener(path, targetListener);
+        return addTargetChildListener(path, targetListener);// 如果是zk作为注册中心，则添加zk事件监听
     }
 
     public void removeChildListener(String path, ChildListener listener) {

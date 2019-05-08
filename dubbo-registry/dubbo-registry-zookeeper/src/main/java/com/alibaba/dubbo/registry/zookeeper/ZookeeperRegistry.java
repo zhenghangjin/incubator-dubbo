@@ -51,7 +51,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
     private final String root;
 
     private final Set<String> anyServices = new ConcurrentHashSet<String>();
-
+    // 一个URL代表一台机器，一个消费者      一个URL可以消费多个注册中心，比如zookeeper或者其他
     private final ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>> zkListeners = new ConcurrentHashMap<URL, ConcurrentMap<NotifyListener, ChildListener>>();
 
     private final ZookeeperClient zkClient;
@@ -156,16 +156,18 @@ public class ZookeeperRegistry extends FailbackRegistry {
                                 Constants.CHECK_KEY, String.valueOf(false)), listener);
                     }
                 }
-            } else {
+            } else {// url consumer://192.168.0.6/com.alibaba.dubbo.demo.DemoService2?application=demo-consumer&category=providers,configurators,routers&check=false&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.DemoService2&methods=sayHello&pid=5380&qos.port=33333&side=consumer&timestamp=1557331841402
                 List<URL> urls = new ArrayList<URL>();
                 for (String path : toCategoriesPath(url)) {
-                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);
+
+                    /* 查看当前注册中心是否有该监听器 start*/
+                    ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);// 查看当前注册中心是否有该监听器
                     if (listeners == null) {
                         zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
                         listeners = zkListeners.get(url);
                     }
                     ChildListener zkListener = listeners.get(listener);
-                    if (zkListener == null) {
+                    if (zkListener == null) { // 如果当前注册中心没有监听器，则加上
                         listeners.putIfAbsent(listener, new ChildListener() {
                             public void childChanged(String parentPath, List<String> currentChilds) {
                                 ZookeeperRegistry.this.notify(url, listener, toUrlsWithEmpty(url, parentPath, currentChilds));
@@ -173,8 +175,11 @@ public class ZookeeperRegistry extends FailbackRegistry {
                         });
                         zkListener = listeners.get(listener);
                     }
-                    zkClient.create(path, false);
-                    List<String> children = zkClient.addChildListener(path, zkListener);
+                    /* 查看当前注册中心是否有该监听器 END */
+
+
+                    zkClient.create(path, false); // 创建被订阅的zookeeper节点，TODO 这个时候应该已经存在？
+                    List<String> children = zkClient.addChildListener(path, zkListener); // 添加zk节点的监听器，三个节点使用同一个监听器，最后调用到childChanged() -> notify()
                     if (children != null) {
                         urls.addAll(toUrlsWithEmpty(url, path, children));
                     }

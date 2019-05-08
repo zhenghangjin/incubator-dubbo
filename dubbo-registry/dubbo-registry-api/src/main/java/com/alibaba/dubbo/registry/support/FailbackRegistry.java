@@ -247,6 +247,13 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         }
     }
 
+    /**
+     * 1 consumer订阅的三个目录变化，会调用到这个方法
+     * 2 consumer启动时，会调用
+     * @param url
+     * @param listener
+     * @param urls
+     */
     @Override
     protected void notify(URL url, NotifyListener listener, List<URL> urls) {// 用来通知子节点
         if (url == null) {
