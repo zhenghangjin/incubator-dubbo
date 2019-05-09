@@ -51,6 +51,10 @@ public class ZookeeperRegistry extends FailbackRegistry {
     private final String root;
 
     private final Set<String> anyServices = new ConcurrentHashSet<String>();
+
+    /**
+     * 该注册中心中所有事件监听器集合
+     */
     // 一个URL代表一台机器，一个消费者      一个URL可以消费多个注册中心，比如zookeeper或者其他
     private final ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>> zkListeners = new ConcurrentHashMap<URL, ConcurrentMap<NotifyListener, ChildListener>>();
 
@@ -162,6 +166,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
 
                     /* 查看当前注册中心是否有该监听器 start*/
                     ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url);// 查看当前注册中心是否有该监听器
+                    //ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.get(url); // zkListeners 该注册中心中所有事件监听器集合
                     if (listeners == null) {
                         zkListeners.putIfAbsent(url, new ConcurrentHashMap<NotifyListener, ChildListener>());
                         listeners = zkListeners.get(url);
