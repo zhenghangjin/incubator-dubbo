@@ -186,7 +186,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
                     zkClient.create(path, false); // 创建被订阅的zookeeper节点，TODO 这个时候应该已经存在？
                     List<String> children = zkClient.addChildListener(path, zkListener); // 添加zk节点的监听器，三个节点使用同一个监听器，最后调用到childChanged() -> notify()
                     if (children != null) {
-                        urls.addAll(toUrlsWithEmpty(url, path, children));
+                        urls.addAll(toUrlsWithEmpty(url, path, children));////有子节点组装，没有那么就将消费者的协议变成empty作为url。
                     }
                 }
                 notify(url, listener, urls);
@@ -282,6 +282,10 @@ public class ZookeeperRegistry extends FailbackRegistry {
         return urls;
     }
 
+    /**
+     * 组装providers、routers、configurators下的url。
+     * 如果有提供者那么就组装；没有的话，就将消费者的协议变成empty
+     */
     private List<URL> toUrlsWithEmpty(URL consumer, String path, List<String> providers) {
         List<URL> urls = toUrlsWithoutEmpty(consumer, providers);
         if (urls == null || urls.isEmpty()) {

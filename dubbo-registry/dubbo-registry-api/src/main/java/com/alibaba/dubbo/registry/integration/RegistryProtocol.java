@@ -305,7 +305,10 @@ public class RegistryProtocol implements Protocol {
         }
         // 第一层：AbstractRegistry：维护已订阅集合
         // 第二层：FailbackRegistry：模板方法
-        // 第三层：ZookeeperRegistry：维护ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>>，ChildListener 调用notify方法，创建被订阅的节点，添加zk监听器
+        // 第三层：ZookeeperRegistry：维护ConcurrentMap<URL, ConcurrentMap<NotifyListener, ChildListener>>，ChildListener 调用notify方法，创建被订阅的节点，添加zk监听器,然后（通知）
+        // notofy 第一层：AbstractRegistry：
+        // notofy 第二层：FailbackRegistry：
+        // notofy 第三层：ZookeeperRegistry：
         directory.subscribe(subscribeUrl.addParameter(Constants.CATEGORY_KEY,
                 Constants.PROVIDERS_CATEGORY
                         + "," + Constants.CONFIGURATORS_CATEGORY
