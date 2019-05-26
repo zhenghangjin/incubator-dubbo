@@ -398,6 +398,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             }
 
             if (urls.size() == 1) {// 只有一个注册中心地址
+                //registry://106.13.35.40:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-consumer&dubbo=2.0.0&pid=14264&qos.port=33333&refer=application%3Ddemo-consumer%26check%3Dfalse%26dubbo%3D2.0.0%26interface%3Dcom.alibaba.dubbo.demo.DemoService2%26methods%3DsayHello%26pid%3D14264%26qos.port%3D33333%26register.ip%3D192.168.0.38%26side%3Dconsumer%26timestamp%3D1558854901036&registry=zookeeper&timestamp=1558854901333
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
             } else {// 多个配置中心地址
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();

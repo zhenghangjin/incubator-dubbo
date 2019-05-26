@@ -288,19 +288,25 @@ public class RegistryProtocol implements Protocol {
         return ExtensionLoader.getExtensionLoader(Cluster.class).getExtension("mergeable");
     }
 
+    //URL:                              zookeeper://106.13.35.40:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-consumer&dubbo=2.0.0&pid=10404&qos.port=33333&refer=application%3Ddemo-consumer%26check%3Dfalse%26dubbo%3D2.0.0%26interface%3Dcom.alibaba.dubbo.demo.DemoService2%26methods%3DsayHello%26pid%3D10404%26qos.port%3D33333%26register.ip%3D192.168.0.38%26side%3Dconsumer%26timestamp%3D1558855541693&timestamp=1558855542014
     private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {
         RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);// overrideDirectoryUrl和directoryUrl的URL Parameter清空，然后获取refer的值
-        directory.setRegistry(registry);
+        // directoryUrl[URL]            zookeeper://106.13.35.40:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-consumer&check=false&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.DemoService2&methods=sayHello&pid=2944&qos.port=33333&register.ip=192.168.0.38&side=consumer&timestamp=1558858239880
+        // overrideDirectoryUrl[URL]    zookeeper://106.13.35.40:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-consumer&check=false&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.DemoService2&methods=sayHello&pid=2944&qos.port=33333&register.ip=192.168.0.38&side=consumer&timestamp=1558858239880
+        // url[URL]                     zookeeper://106.13.35.40:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-consumer&dubbo=2.0.0&pid=2944&qos.port=33333&refer=application%3Ddemo-consumer%26check%3Dfalse%26dubbo%3D2.0.0%26interface%3Dcom.alibaba.dubbo.demo.DemoService2%26methods%3DsayHello%26pid%3D2944%26qos.port%3D33333%26register.ip%3D192.168.0.38%26side%3Dconsumer%26timestamp%3D1558858239880&timestamp=1558858240101
+        // consumerUrl[URL]             zookeeper://106.13.35.40:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-consumer&dubbo=2.0.0&pid=2944&qos.port=33333&refer=application%3Ddemo-consumer%26check%3Dfalse%26dubbo%3D2.0.0%26interface%3Dcom.alibaba.dubbo.demo.DemoService2%26methods%3DsayHello%26pid%3D2944%26qos.port%3D33333%26register.ip%3D192.168.0.38%26side%3Dconsumer%26timestamp%3D1558858239880&timestamp=1558858240101
+
+        directory.setRegistry(registry);//zookeeper://106.13.35.40:2181/com.alibaba.dubbo.registry.RegistryService?application=demo-consumer&dubbo=2.0.0&interface=com.alibaba.dubbo.registry.RegistryService&pid=2944&qos.port=33333&timestamp=1558858240101
         directory.setProtocol(protocol);
         // all attributes of REFER_KEY
-        Map<String, String> parameters = new HashMap<String, String>(directory.getUrl().getParameters());// key 为 refer 的所有属性
-        URL subscribeUrl = new URL(Constants.CONSUMER_PROTOCOL, parameters.remove(Constants.REGISTER_IP_KEY), 0, type.getName(), parameters);// Protocol = "consumer"
+        Map<String, String> parameters = new HashMap<String, String>(directory.getUrl().getParameters());// key 为 refer 的所有属性 取的是overrideDirectoryUrl这个URL
+        URL subscribeUrl = new URL(Constants.CONSUMER_PROTOCOL, parameters.remove(Constants.REGISTER_IP_KEY), 0, type.getName(), parameters);// consumer://192.168.0.38/com.alibaba.dubbo.demo.DemoService2?application=demo-consumer&check=false&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.DemoService2&methods=sayHello&pid=2944&qos.port=33333&side=consumer&timestamp=1558858239880
         if (!Constants.ANY_VALUE.equals(url.getServiceInterface())
                 && url.getParameter(Constants.REGISTER_KEY, true)) {// 如果interface Parameter为*，或者registry Parameter为false，则不注册
             // 第一层：AbstractRegistry：维护已注册集合
             // 第二层：FailbackRegistry：模板方法
             // 第三层：ZookeeperRegistry：创建zk节点
-            registry.register(subscribeUrl.addParameters(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY,// 创建zk消费者节点
+            registry.register(subscribeUrl.addParameters(Constants.CATEGORY_KEY, Constants.CONSUMERS_CATEGORY,// 创建zk消费者节点 consumer://192.168.0.38/com.alibaba.dubbo.demo.DemoService2?application=demo-consumer&category=consumers&check=false&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.DemoService2&methods=sayHello&pid=2136&qos.port=33333&side=consumer&timestamp=1558860420892
                     Constants.CHECK_KEY, String.valueOf(false)));
         }
         // 第一层：AbstractRegistry：维护已订阅集合

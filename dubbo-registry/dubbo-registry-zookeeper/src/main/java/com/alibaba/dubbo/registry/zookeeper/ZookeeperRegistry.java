@@ -183,7 +183,7 @@ public class ZookeeperRegistry extends FailbackRegistry {
                     /* 查看当前注册中心是否有该监听器 END */
 
 
-                    zkClient.create(path, false); // 创建被订阅的zookeeper节点，TODO 这个时候应该已经存在？
+                    zkClient.create(path, false); // 创建被订阅的zookeeper节点，如果有provider 这个时候应该已经存在
                     List<String> children = zkClient.addChildListener(path, zkListener); // 添加zk节点的监听器，三个节点使用同一个监听器，最后调用到childChanged() -> notify()
                     if (children != null) {
                         urls.addAll(toUrlsWithEmpty(url, path, children));////有子节点组装，没有那么就将消费者的协议变成empty作为url。
@@ -287,11 +287,11 @@ public class ZookeeperRegistry extends FailbackRegistry {
      * 如果有提供者那么就组装；没有的话，就将消费者的协议变成empty
      */
     private List<URL> toUrlsWithEmpty(URL consumer, String path, List<String> providers) {
-        List<URL> urls = toUrlsWithoutEmpty(consumer, providers);
-        if (urls == null || urls.isEmpty()) {
+        List<URL> urls = toUrlsWithoutEmpty(consumer, providers); // 消费者跟提供者对应，则添加提供者
+        if (urls == null || urls.isEmpty()) { // 如果没有提供者
             int i = path.lastIndexOf('/');
             String category = i < 0 ? path : path.substring(i + 1);
-            URL empty = consumer.setProtocol(Constants.EMPTY_PROTOCOL).addParameter(Constants.CATEGORY_KEY, category);
+            URL empty = consumer.setProtocol(Constants.EMPTY_PROTOCOL).addParameter(Constants.CATEGORY_KEY, category);// 然后置为Empty协议
             urls.add(empty);
         }
         return urls;

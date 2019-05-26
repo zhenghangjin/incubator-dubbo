@@ -386,7 +386,7 @@ public abstract class AbstractRegistry implements Registry {
         if (logger.isInfoEnabled()) {
             logger.info("Notify urls for subscribe url " + url + ", urls: " + urls);
         }
-        Map<String, List<URL>> result = new HashMap<String, List<URL>>();
+        Map<String, List<URL>> result = new HashMap<String, List<URL>>();// start=====================把添加childListener时返回的provider url添加到result
         for (URL u : urls) {
             if (UrlUtils.isMatch(url, u)) {
                 String category = u.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY);
@@ -397,7 +397,7 @@ public abstract class AbstractRegistry implements Registry {
                 }
                 categoryList.add(u);
             }
-        }
+        } // end=====================把添加childListener时返回的provider url添加到result
         if (result.size() == 0) {
             return;
         }
@@ -407,10 +407,10 @@ public abstract class AbstractRegistry implements Registry {
             categoryNotified = notified.get(url);
         }
         for (Map.Entry<String, List<URL>> entry : result.entrySet()) {
-            String category = entry.getKey();
+            String category = entry.getKey();// 1 把添加childListener时返回的provider url，循环添加给notified
             List<URL> categoryList = entry.getValue();
             categoryNotified.put(category, categoryList);
-            saveProperties(url);
+            saveProperties(url);// 2 保持本地文件
             listener.notify(categoryList);
         }
     }

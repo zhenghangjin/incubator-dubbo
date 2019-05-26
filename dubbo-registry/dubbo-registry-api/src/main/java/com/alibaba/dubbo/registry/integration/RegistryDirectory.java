@@ -178,12 +178,12 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             logger.warn("Failed to destroy service " + serviceKey, t);
         }
     }
-
+    // empty://192.168.0.38/com.alibaba.dubbo.demo.DemoService2?application=demo-consumer&category=configurators&check=false&dubbo=2.0.0&interface=com.alibaba.dubbo.demo.DemoService2&methods=sayHello&pid=5184&qos.port=33333&side=consumer&timestamp=1558875553887
     public synchronized void notify(List<URL> urls) {// 实现NotifyListener.notify 方法
         List<URL> invokerUrls = new ArrayList<URL>();
         List<URL> routerUrls = new ArrayList<URL>();
         List<URL> configuratorUrls = new ArrayList<URL>();
-        for (URL url : urls) {
+        for (URL url : urls) { // 分别赋值三个URL
             String protocol = url.getProtocol();
             String category = url.getParameter(Constants.CATEGORY_KEY, Constants.DEFAULT_CATEGORY);
             if (Constants.ROUTERS_CATEGORY.equals(category)
@@ -198,7 +198,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                 logger.warn("Unsupported category " + category + " in notified url: " + url + " from registry " + getUrl().getAddress() + " to consumer " + NetUtils.getLocalHost());
             }
         }
-        // configurators
+        // configurators // 如果是Empty协议，返回是空的；如果其他协议，todo
         if (configuratorUrls != null && configuratorUrls.size() > 0) {
             this.configurators = toConfigurators(configuratorUrls);
         }
@@ -230,7 +230,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param invokerUrls this parameter can't be null
      */
     // TODO: 2017/8/31 FIXME The thread pool should be used to refresh the address, otherwise the task may be accumulated.
-    private void refreshInvoker(List<URL> invokerUrls) {
+    private void refreshInvoker(List<URL> invokerUrls) { // 只把provider传进来
         if (invokerUrls != null && invokerUrls.size() == 1 && invokerUrls.get(0) != null
                 && Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())) {
             this.forbidden = true; // Forbid to access
