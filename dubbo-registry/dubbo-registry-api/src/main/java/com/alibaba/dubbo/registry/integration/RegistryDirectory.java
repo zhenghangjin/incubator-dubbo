@@ -200,7 +200,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
         // configurators // 如果是Empty协议，返回是空的；如果其他协议，todo
         if (configuratorUrls != null && configuratorUrls.size() > 0) {
-            this.configurators = toConfigurators(configuratorUrls);
+            this.configurators = toConfigurators(configuratorUrls);// 如果有动态配置，覆盖this.configurators
         }
         // routers
         if (routerUrls != null && routerUrls.size() > 0) {

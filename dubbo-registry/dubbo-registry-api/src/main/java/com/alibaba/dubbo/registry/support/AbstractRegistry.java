@@ -397,7 +397,7 @@ public abstract class AbstractRegistry implements Registry {
                 }
                 categoryList.add(u);
             }
-        } // end=====================把添加childListener时返回的provider url添加到result
+        } // end=====================把添加childListener时返回的provider url添加到result，里边包含empty协议
         if (result.size() == 0) {
             return;
         }
