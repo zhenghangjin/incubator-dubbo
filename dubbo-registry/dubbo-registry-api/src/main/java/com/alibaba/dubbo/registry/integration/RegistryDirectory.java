@@ -230,9 +230,9 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param invokerUrls this parameter can't be null
      */
     // TODO: 2017/8/31 FIXME The thread pool should be used to refresh the address, otherwise the task may be accumulated.
-    private void refreshInvoker(List<URL> invokerUrls) { // 只把provider传进来
+    private void refreshInvoker(List<URL> invokerUrls) { // 只把provider传进来,如果是configurator或者router,则传入空
         if (invokerUrls != null && invokerUrls.size() == 1 && invokerUrls.get(0) != null
-                && Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())) {
+                && Constants.EMPTY_PROTOCOL.equals(invokerUrls.get(0).getProtocol())) { // consumer启动时无provider的情况会走该逻辑
             this.forbidden = true; // Forbid to access
             this.methodInvokerMap = null; // Set the method invoker map to null
             destroyAllInvokers(); // Close all invokers
