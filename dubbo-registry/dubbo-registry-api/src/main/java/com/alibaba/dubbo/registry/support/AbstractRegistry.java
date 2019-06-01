@@ -386,6 +386,9 @@ public abstract class AbstractRegistry implements Registry {
         if (logger.isInfoEnabled()) {
             logger.info("Notify urls for subscribe url " + url + ", urls: " + urls);
         }
+
+
+        // 将匹配的URL放入map中 start-----------
         Map<String, List<URL>> result = new HashMap<String, List<URL>>();// start=====================把添加childListener时返回的provider url添加到result
         for (URL u : urls) {
             if (UrlUtils.isMatch(url, u)) {
@@ -401,6 +404,9 @@ public abstract class AbstractRegistry implements Registry {
         if (result.size() == 0) {
             return;
         }
+        // 将匹配的URL放入map中 end--------------
+
+        // 维护notified集合
         Map<String, List<URL>> categoryNotified = notified.get(url);
         if (categoryNotified == null) {
             notified.putIfAbsent(url, new ConcurrentHashMap<String, List<URL>>());
