@@ -105,8 +105,8 @@ public class Exchangers {
         if (handler == null) {
             throw new IllegalArgumentException("handler == null");
         }
-        url = url.addParameterIfAbsent(Constants.CODEC_KEY, "exchange");
-        return getExchanger(url).connect(url, handler);
+        url = url.addParameterIfAbsent(Constants.CODEC_KEY, "exchange");// ZHJ 赋值 codec->exchange
+        return getExchanger(url).connect(url, handler);// 先得到HeaderExchanger，然后调用Transport层进行连接
     }
 
     public static Exchanger getExchanger(URL url) {

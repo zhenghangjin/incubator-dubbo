@@ -54,7 +54,7 @@ final class HeartBeatTask implements Runnable {
                     Long lastWrite = (Long) channel.getAttribute(
                             HeaderExchangeHandler.KEY_WRITE_TIMESTAMP);
                     if ((lastRead != null && now - lastRead > heartbeat)
-                            || (lastWrite != null && now - lastWrite > heartbeat)) {
+                            || (lastWrite != null && now - lastWrite > heartbeat)) { // 最后一次 读或写 的时间，超过心跳间隔时间
                         Request req = new Request();
                         req.setVersion("2.0.0");
                         req.setTwoWay(true);
@@ -65,7 +65,7 @@ final class HeartBeatTask implements Runnable {
                                     + ", cause: The channel has no data-transmission exceeds a heartbeat period: " + heartbeat + "ms");
                         }
                     }
-                    if (lastRead != null && now - lastRead > heartbeatTimeout) {
+                    if (lastRead != null && now - lastRead > heartbeatTimeout) { // 上一次读的时间，已经超时了，将进行重连
                         logger.warn("Close channel " + channel
                                 + ", because heartbeat read idle time out: " + heartbeatTimeout + "ms");
                         if (channel instanceof Client) {

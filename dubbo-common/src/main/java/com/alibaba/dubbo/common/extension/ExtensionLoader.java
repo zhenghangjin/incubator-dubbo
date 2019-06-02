@@ -406,6 +406,9 @@ public class ExtensionLoader<T> {
                     instance = cachedAdaptiveInstance.get();
                     if (instance == null) {
                         try {
+                            if(type.getName().contains("com.alibaba.dubbo.remoting.Dispatcher")){
+                                logger.info("zhj this is Transporter...");
+                            }
                             instance = createAdaptiveExtension();
                             cachedAdaptiveInstance.set(instance);
                         } catch (Throwable t) {

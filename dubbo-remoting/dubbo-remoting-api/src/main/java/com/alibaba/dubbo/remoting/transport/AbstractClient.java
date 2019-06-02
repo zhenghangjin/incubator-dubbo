@@ -65,7 +65,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     // the last successed connected time
     private long lastConnectedTime = System.currentTimeMillis();
 
-
+    // ZHJ 模板方法
     public AbstractClient(URL url, ChannelHandler handler) throws RemotingException {
         super(url, handler);
 
@@ -77,7 +77,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         reconnect_warning_period = url.getParameter("reconnect.waring.period", 1800);
 
         try {
-            doOpen();
+            doOpen(); // Netty实现类：创建客户端
         } catch (Throwable t) {
             close();
             throw new RemotingException(url.toInetSocketAddress(), null,
@@ -86,7 +86,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         }
         try {
             // connect.
-            connect();
+            connect(); // 进行服务端
             if (logger.isInfoEnabled()) {
                 logger.info("Start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress() + " connect to the server " + getRemoteAddress());
             }
@@ -110,7 +110,9 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         ExtensionLoader.getExtensionLoader(DataStore.class)
                 .getDefaultExtension().remove(Constants.CONSUMER_SIDE, Integer.toString(url.getPort()));
     }
-
+    // 1、设置 Dispatcher，不同程度使用线程池
+    // 2、设置最后读、最后写的时间
+    // 3、多信息 todo ZHJ
     protected static ChannelHandler wrapChannelHandler(URL url, ChannelHandler handler) {
         url = ExecutorUtil.setThreadName(url, CLIENT_THREAD_POOL_NAME);
         url = url.addParameterIfAbsent(Constants.THREADPOOL_KEY, Constants.DEFAULT_CLIENT_THREADPOOL);
