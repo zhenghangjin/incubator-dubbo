@@ -27,7 +27,7 @@ limitations under the License.
 
     <!-- use multicast registry center to discover service -->
     <!--<dubbo:registry address="multicast://224.5.6.7:1234"/>-->
-    <dubbo:registry address="zookeeper://106.13.35.40:2181"/>
+    <dubbo:registry address="zookeeper://106.13.35.40:2181" file="E://frame_study\dubbo.cache"/>
 
     <!-- generate proxy for the remote service, then demoService can be used in the same way as the
     local regular interface -->

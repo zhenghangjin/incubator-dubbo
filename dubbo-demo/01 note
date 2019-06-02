@@ -82,7 +82,7 @@
     ./zkServer.sh restart 连接断开 连接成功
     ./zkServer.sh stop 连接断开
     等待几分钟
-    ./zkServer.sh satrt 其他状态Expired ---->重建session 连接成功
+    ./zkServer.sh start 其他状态Expired ---->重建session 连接成功
     [Demo:]
     zkc.subscribeStateChanges(new IZkStateListener() {
         @Override
