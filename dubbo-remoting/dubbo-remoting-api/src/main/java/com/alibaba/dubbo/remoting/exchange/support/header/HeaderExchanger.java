@@ -34,6 +34,15 @@ public class HeaderExchanger implements Exchanger {
 
     public static final String NAME = "header";
 
+    /**
+     * 1 包装 channel信息头，包装编解码
+     * 2 传输层进行连接
+     * 3、心跳
+     * @param url
+     * @param handler
+     * @return
+     * @throws RemotingException
+     */
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }
